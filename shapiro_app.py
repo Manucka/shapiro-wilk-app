@@ -41,7 +41,7 @@ st.info("Por favor, insira seus números separados por vírgulas (ex: 1.2, 3.4, 
 # O usuário pode colar ou digitar os números aqui
 input_numbers_str = st.text_area(
     "Valores (entre 10 e 30 números)",
-    value="18.66667, 18.95, 17.85, 15.73333, 16.41667, 14.5, 15.91667, 15.3, 15.41667, 15.91667, 16.41667, 16.66667, 18.95, 17.85, 15.73333",
+    value="", # <--- ALTERADO AQUI: O campo agora começará vazio
     height=150,
     help="Cole ou digite seus números aqui. Use vírgulas ou quebras de linha para separar os valores."
 )
@@ -151,5 +151,6 @@ with st.sidebar:
         * Se `p-valor > 0.05` (nível de significância comum): Não rejeitamos H₀. Os dados podem ser normais.
         * Se `p-valor ≤ 0.05`: Rejeitamos H₀. Os dados provavelmente não são normais.
     """)
+
     st.markdown("---")
     st.markdown("Desenvolvido por EI - MAN")
