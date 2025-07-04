@@ -151,6 +151,3 @@ with st.sidebar:
         * Se `p-valor > 0.05` (nível de significância comum): Não rejeitamos H₀. Os dados podem ser normais.
         * Se `p-valor ≤ 0.05`: Rejeitamos H₀. Os dados provavelmente não são normais.
     """)
-    st.markdown("---")
-    st.markdown("Desenvolvido com ❤️ por Gemini")
-
