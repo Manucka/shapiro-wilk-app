@@ -19,7 +19,8 @@ import seaborn as sns
 # ==============================================================================
 st.set_page_config(
     page_title="Teste de Normalidade Shapiro-Wilk",
-    page_icon="📊",
+    page_icon=
+       st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=150),
     layout="centered",
     initial_sidebar_state="expanded"
 )
