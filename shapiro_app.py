@@ -54,6 +54,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("Teste de Normalidade Shapiro-Wilk")
+help="TITULO."
 st.markdown("""
     Verificação de normalidade com estatísticas descritivas, W, p-valor e gráficos integrados.
 """)
