@@ -62,10 +62,10 @@ st.markdown("""
 # OPÇÃO B: Usando uma URL (substitua pela URL da logo da sua empresa)
 # Abaixo usamos colunas para centralizar a imagem
 col1, col2, col3 = st.columns([1, 1, 1])
-with col2:
+with col1:
     # Substitua o link abaixo pelo link da logo da sua empresa
     # Se quiser usar um arquivo local que subiu no GitHub, use apenas o nome do arquivo: st.image("logo.png")
-    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=400)
+    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=500)
 
 st.title("📊 Teste de Normalidade Shapiro-Wilk")
 st.markdown("""
