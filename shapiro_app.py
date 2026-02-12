@@ -4,7 +4,7 @@ Aplicativo Streamlit para Teste de Normalidade Shapiro-Wilk
 
 Este script cria um aplicativo web interativo usando Streamlit.
 O usuário pode inserir uma lista de números para realizar o teste de
-Shapiro-Wilk e visualizar os resultados e gráficos de normalidade.
+Shapiro-Wilk e visualizar estatísticas descritivas, resultados e gráficos.
 """
 
 import streamlit as st
@@ -25,132 +25,115 @@ st.set_page_config(
 
 st.title("📊 Teste de Normalidade Shapiro-Wilk")
 st.markdown("""
-    Este aplicativo permite que você verifique se um conjunto de dados segue uma distribuição normal
-    usando o teste de Shapiro-Wilk.
-    Você pode inserir seus números, e o aplicativo fornecerá a estatística do teste,
-    o valor-p e gráficos para visualização.
+    Este aplicativo permite verificar se um conjunto de dados segue uma distribuição normal.
+    Ele fornece estatísticas descritivas, a estatística do teste (W), o valor-p e gráficos de visualização.
 """)
 
 # ==============================================================================
 # 2. Entrada de Dados do Usuário
 # ==============================================================================
 st.header("🔢 Insira Seus Números")
-st.info("Por favor, insira seus números separados por vírgulas (ex: 1.2, 3.4, 5.6) ou um por linha.")
+st.info("Insira seus números separados por vírgulas (ex: 1.2, 3.4, 5.6) ou um por linha.")
 
-# Área de texto para entrada de números
-# O usuário pode colar ou digitar os números aqui
 input_numbers_str = st.text_area(
     "Valores (entre 10 e 30 números)",
-    value="", # <--- ALTERADO AQUI: O campo agora começará vazio
+    value="",
     height=150,
     help="Cole ou digite seus números aqui. Use vírgulas ou quebras de linha para separar os valores."
 )
 
-# Botão para iniciar a análise
 analyze_button = st.button("Analisar Dados")
 
 # ==============================================================================
-# 3. Lógica de Análise (executada ao clicar no botão)
+# 3. Lógica de Análise
 # ==============================================================================
 if analyze_button:
     try:
-        # Processa a string de entrada para obter uma lista de números
-        # Remove espaços em branco, substitui vírgulas por pontos (para decimal),
-        # divide por vírgulas ou quebras de linha, filtra vazios e converte para float.
+        # Processamento da entrada
         numbers_raw = input_numbers_str.replace(' ', '').replace(',', '.').replace('\n', ',').split(',')
         dados = [float(num) for num in numbers_raw if num.strip()]
 
         num_dados = len(dados)
 
-        # Validação do número de dados
         if num_dados < 10 or num_dados > 30:
             st.error(f"❌ Erro: O número de dados fornecido ({num_dados}) está fora do intervalo permitido (10 a 30).")
-            st.warning("Por favor, insira entre 10 e 30 números.")
         elif num_dados == 0:
-            st.error("❌ Erro: Nenhum dado válido foi inserido. Por favor, digite ou cole seus números.")
+            st.error("❌ Erro: Nenhum dado válido foi inserido.")
         else:
-            st.success(f"✅ Dados carregados com sucesso: {num_dados} valores.")
+            st.success(f"✅ Análise concluída para {num_dados} valores.")
             st.write("---")
 
-            # Realiza o teste de Shapiro-Wilk
-            st.header("🔬 Resultados do Teste de Shapiro-Wilk")
+            # Cálculos Estatísticos
+            media = np.mean(dados)
+            desvio_padrao = np.std(dados, ddof=1) # ddof=1 para desvio padrão amostral
             statistic, p_value = stats.shapiro(dados)
+            alpha = 0.05
 
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric(label="Estatística W", value=f"{statistic:.4f}")
-            with col2:
-                st.metric(label="Valor-p", value=f"{p_value:.4f}")
+            # Exibição das Informações (Estilo Relatório)
+            st.header("📋 Resumo da Análise")
+            
+            # Criando colunas para as estatísticas descritivas
+            col_a, col_b, col_c = st.columns(3)
+            col_a.metric("Média", f"{media:.4f}")
+            col_b.metric("Desvio Padrão", f"{desvio_padrao:.4f}")
+            col_c.metric("Observações", f"{num_dados}")
 
-            # Interpretação do resultado
-            alpha = 0.05 # Nível de significância padrão
-            st.subheader("Conclusão:")
+            st.write("---")
+            
+            # Resultados do Teste de Shapiro-Wilk
+            st.subheader("Resultados do Teste")
+            col_w, col_p = st.columns(2)
+            col_w.metric("Estatística W", f"{statistic:.6f}")
+            col_p.metric("Valor-P", f"{p_value:.6f}")
+
+            # Conclusão baseada no Alpha
             if p_value > alpha:
-                st.markdown(f"Com um nível de significância de **{alpha}**, o valor-p ({p_value:.4f}) é maior que {alpha}.")
-                st.markdown("Portanto, **não há evidência estatística para rejeitar a hipótese nula de normalidade.**")
-                st.success("Isso sugere que os dados **PARECEM seguir uma distribuição normal**.")
+                st.success(f"**CONCLUSÃO:** A normalidade é **ACEITA** com um risco alfa de {int(alpha*100)}%")
+                st.markdown("Os dados parecem seguir uma distribuição normal.")
             else:
-                st.markdown(f"Com um nível de significância de **{alpha}**, o valor-p ({p_value:.4f}) é menor ou igual a {alpha}.")
-                st.markdown("Portanto, **rejeitamos a hipótese nula de normalidade.**")
-                st.error("Isso sugere que os dados **NÃO PARECEM seguir uma distribuição normal**.")
+                st.error(f"**CONCLUSÃO:** A normalidade é **REJEITADA** com um risco alfa de {int(alpha*100)}%")
+                st.markdown("Os dados não parecem seguir uma distribuição normal.")
 
             st.write("---")
 
             # ==============================================================================
-            # 4. Geração de Gráficos para Visualização
+            # 4. Gráficos
             # ==============================================================================
-            st.header("📈 Visualização da Distribuição")
-            st.markdown("Os gráficos abaixo ajudam a visualizar a forma da distribuição dos seus dados.")
-
-            # Configurações para os gráficos
+            st.header("📈 Visualização Gráfica")
             plt.style.use('seaborn-v0_8-darkgrid')
             fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-            # --- Histograma ---
-            sns.histplot(dados, kde=True, bins='auto', color='darkorange', edgecolor='black', ax=axes[0])
-            axes[0].set_title('Histograma dos Dados', fontsize=14)
+            # Histograma
+            sns.histplot(dados, kde=True, bins='auto', color='royalblue', edgecolor='black', ax=axes[0])
+            axes[0].set_title('Histograma e Curva de Densidade', fontsize=14)
             axes[0].set_xlabel('Valores', fontsize=12)
             axes[0].set_ylabel('Frequência', fontsize=12)
-            axes[0].grid(axis='y', alpha=0.75)
 
-            # --- Q-Q Plot ---
+            # Q-Q Plot
             stats.probplot(dados, dist="norm", plot=axes[1])
-            axes[1].set_title('Q-Q Plot (Distribuição Normal)', fontsize=14)
-            axes[1].set_xlabel('Quantis Teóricos (Normal)', fontsize=12)
+            axes[1].set_title('Gráfico Q-Q (Quantil-Quantil)', fontsize=14)
+            axes[1].set_xlabel('Quantis Teóricos', fontsize=12)
             axes[1].set_ylabel('Quantis Observados', fontsize=12)
-            axes[1].grid(True)
 
             plt.tight_layout()
-            st.pyplot(fig) # Exibe a figura no Streamlit
-
-            st.markdown("""
-            **Guia de Interpretação dos Gráficos:**
-            1.  **Histograma:** Observe a forma da distribuição. Uma distribuição normal se assemelha a uma 'curva de sino' simétrica. Desvios dessa forma (assimetria, múltiplos picos, achatamento) sugerem não-normalidade.
-            2.  **Q-Q Plot (Quantil-Quantil):** Compare a dispersão dos pontos com a linha reta diagonal. Se os pontos seguirem de perto a linha reta, os dados são aproximadamente normalmente distribuídos. Desvios significativos da linha indicam não-normalidade.
-            """)
-            st.info("Nota: Para amostras pequenas, a interpretação visual dos gráficos pode ser menos conclusiva do que o resultado do teste estatístico formal.")
+            st.pyplot(fig)
 
     except ValueError:
-        st.error("❌ Erro: Por favor, insira apenas números válidos. Verifique se não há caracteres estranhos.")
+        st.error("❌ Erro: Certifique-se de inserir apenas números válidos.")
     except Exception as e:
-        st.error(f"❌ Ocorreu um erro inesperado: {e}")
+        st.error(f"❌ Ocorreu um erro: {e}")
 
-# ==============================================================================
-# 5. Informações Adicionais (Sidebar)
-# ==============================================================================
+# Sidebar
 with st.sidebar:
-    st.header("Sobre o Teste de Shapiro-Wilk")
+    st.header("Informações Técnicas")
     st.markdown("""
-        O teste de Shapiro-Wilk é um teste de hipótese usado para verificar
-        se uma amostra de dados foi retirada de uma população com distribuição normal.
-
-        * **Hipótese Nula (H₀):** Os dados são normalmente distribuídos.
-        * **Hipótese Alternativa (H₁):** Os dados não são normalmente distribuídos.
-
-        **Interpretação do Valor-p:**
-        * Se `p-valor > 0.05` (nível de significância comum): Não rejeitamos H₀. Os dados podem ser normais.
-        * Se `p-valor ≤ 0.05`: Rejeitamos H₀. Os dados provavelmente não são normais.
+        **Média:** Soma de todos os valores dividida pela contagem.
+        
+        **Desvio Padrão:** Medida da dispersão dos dados em relação à média.
+        
+        **Estatística W:** Mede a proximidade dos dados a uma distribuição normal ideal (máximo 1).
+        
+        **Valor-P:** Se for maior que 0.05, aceitamos que os dados são normais.
     """)
-
     st.markdown("---")
-    st.markdown("Desenvolvido por EI - MAN")
+    st.caption("Desenvolvido para análise de precisão.")
