@@ -54,7 +54,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("Teste de Normalidade Shapiro-Wilk")
-help="TITULO."
 st.markdown("""
     Verificação de normalidade com estatísticas descritivas, W, p-valor e gráficos integrados.
 """)
@@ -176,10 +175,6 @@ with st.sidebar:
     st.markdown("""
         O teste de Shapiro-Wilk é um teste de hipótese usado para verificar
         se uma amostra de dados foi retirada de uma população com distribuição normal.
-
-        **Interpretação do Valor-p:**
-        * Se `p-valor > 0.05` (nível de significância comum): Não rejeitamos H₀. Os dados podem ser normais.
-        * Se `p-valor ≤ 0.05`: Rejeitamos H₀. Os dados provavelmente não são normais.
     """)
 
     st.markdown("---")
