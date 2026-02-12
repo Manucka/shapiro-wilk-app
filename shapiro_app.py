@@ -53,30 +53,18 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# ==============================================================================
-# 2. Logo da Empresa
-# ==============================================================================
-# OPÇÃO A: Se você tiver a imagem no GitHub, use: st.image("logo.png", width=200)
-# OPÇÃO B: Usando uma URL (substitua pela URL da logo da sua empresa)
-# Abaixo usamos colunas para centralizar a imagem
-col1, col2, col3 = st.columns([1, 1, 1])
-with col1:
-    # Substitua o link abaixo pelo link da logo da sua empresa
-    # Se quiser usar um arquivo local que subiu no GitHub, use apenas o nome do arquivo: st.image("logo.png")
-    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=500)
-
-st.title("📊 Teste de Normalidade Shapiro-Wilk")
+st.title("Teste de Normalidade Shapiro-Wilk")
 st.markdown("""
     Verificação de normalidade com estatísticas descritivas, W, p-valor e gráficos integrados.
 """)
 
 # ==============================================================================
-# 3. Entrada de Dados do Usuário
+# 2. Entrada de Dados do Usuário
 # ==============================================================================
 st.header("🔢 Insira Seus Números")
 
 input_numbers_str = st.text_area(
-    "Valores (entre 10 e 30 números)",
+    "Mínimo 11 amostras",
     value="",
     height=120,
     help="Cole ou digite seus números aqui. Use vírgulas ou quebras de linha."
@@ -85,7 +73,7 @@ input_numbers_str = st.text_area(
 analyze_button = st.button("Analisar Dados")
 
 # ==============================================================================
-# 4. Lógica de Análise
+# 3. Lógica de Análise
 # ==============================================================================
 if analyze_button:
     try:
@@ -95,8 +83,8 @@ if analyze_button:
 
         num_dados = len(dados)
 
-        if num_dados < 10 or num_dados > 30:
-            st.error(f"❌ Erro: O número de dados fornecido ({num_dados}) está fora do intervalo permitido (10 a 30).")
+        if num_dados < 10 or num_dados > 45:
+            st.error(f"❌ Erro: O número de dados fornecido ({num_dados}) está fora do intervalo permitido (Mínimo 11).")
         elif num_dados == 0:
             st.error("❌ Erro: Nenhum dado válido foi inserido.")
         else:
@@ -155,9 +143,9 @@ if analyze_button:
             """
             st.markdown(html_table, unsafe_allow_html=True)
 
-            # ==============================================================================
-            # 5. Gráficos (Logo abaixo da tabela)
-            # ==============================================================================
+# ==============================================================================
+# 4. Gráficos (Logo abaixo da tabela)
+# ==============================================================================
             plt.style.use('seaborn-v0_8-darkgrid')
             fig, axes = plt.subplots(1, 2, figsize=(12, 4)) 
 
@@ -187,9 +175,6 @@ with st.sidebar:
     st.markdown("""
         O teste de Shapiro-Wilk é um teste de hipótese usado para verificar
         se uma amostra de dados foi retirada de uma população com distribuição normal.
-
-        * **Hipótese Nula (H₀):** Os dados são normalmente distribuídos.
-        * **Hipótese Alternativa (H₁):** Os dados não são normalmente distribuídos.
 
         **Interpretação do Valor-p:**
         * Se `p-valor > 0.05` (nível de significância comum): Não rejeitamos H₀. Os dados podem ser normais.
