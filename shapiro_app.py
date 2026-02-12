@@ -173,7 +173,3 @@ with st.sidebar:
     """)
     st.write("---")
     st.caption("v2.3 - Tabela Unificada")
-        Ao selecionar a tabela e colar no Excel, o título e a conclusão serão incluídos automaticamente.
-    """)
-    st.write("---")
-    st.caption("v2.3 - Tabela Unificada")
