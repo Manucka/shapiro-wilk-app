@@ -5,7 +5,7 @@ Aplicativo Streamlit para Teste de Normalidade Shapiro-Wilk
 Este script cria um aplicativo web interativo usando Streamlit.
 O usuário pode inserir uma lista de números para realizar o teste de
 Shapiro-Wilk e visualizar estatísticas descritivas, resultados e gráficos.
-Layout otimizado para cópia e colagem no Excel em colunas separadas.
+Layout otimizado para que título e conclusão também sejam exportados para o Excel.
 """
 
 import streamlit as st
@@ -30,16 +30,21 @@ st.markdown("""
     table {
         width: 100%;
         border-collapse: collapse;
+        margin-bottom: 20px;
     }
     th, td {
         text-align: left;
-        padding: 8px;
+        padding: 10px;
         border-bottom: 1px solid #f0f2f6;
     }
-    .conclusion-text {
+    .table-title {
+        font-size: 1.2em;
         font-weight: bold;
-        margin-top: 15px;
-        margin-bottom: 15px;
+        background-color: #f8f9fb;
+    }
+    .conclusion-cell {
+        font-weight: bold;
+        padding-top: 15px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -89,15 +94,24 @@ if analyze_button:
             def fmt(valor, casas=7):
                 return f"{valor:.{casas}f}".replace('.', ',')
 
+            # Definição da conclusão
+            if p_value > alpha:
+                conc_text = f"CONCLUSÃO: A normalidade é aceita com um risco alfa de {int(alpha*100)}%"
+                conc_color = "#2e7d32" # Verde
+            else:
+                conc_text = f"CONCLUSÃO: A normalidade é rejeitada com um risco alfa de {int(alpha*100)}%"
+                conc_color = "#c62828" # Vermelho
+
             st.write("---")
-            st.header("📝 Teste de Normalidade (Método SHAPIRO-WILK)")
             
-            # Construindo uma tabela HTML para facilitar a cópia para o Excel
-            # Tabelas HTML são interpretadas pelo Excel como colunas separadas
+            # Construindo a tabela HTML unificada
             html_table = f"""
             <table>
                 <tr>
-                    <td style="font-weight: bold; width: 200px;">Média</td>
+                    <td colspan="2" class="table-title">📝 Teste de Normalidade (Método SHAPIRO-WILK)</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; width: 250px;">Média</td>
                     <td>{fmt(media)}</td>
                 </tr>
                 <tr>
@@ -116,18 +130,17 @@ if analyze_button:
                     <td style="font-weight: bold;">Valor-P</td>
                     <td>{fmt(p_value)}</td>
                 </tr>
+                <tr>
+                    <td colspan="2" class="conclusion-cell" style="color: {conc_color}; border-bottom: none;">
+                        {conc_text}
+                    </td>
+                </tr>
             </table>
             """
             st.markdown(html_table, unsafe_allow_html=True)
 
-            # Conclusão
-            if p_value > alpha:
-                st.markdown(f"<div class='conclusion-text' style='color: #2e7d32;'>CONCLUSÃO: A normalidade é aceita com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<div class='conclusion-text' style='color: #c62828;'>CONCLUSÃO: A normalidade é rejeitada com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
-
             # ==============================================================================
-            # 4. Gráficos (Logo abaixo da conclusão)
+            # 4. Gráficos (Logo abaixo da tabela)
             # ==============================================================================
             plt.style.use('seaborn-v0_8-darkgrid')
             fig, axes = plt.subplots(1, 2, figsize=(12, 4)) 
@@ -154,9 +167,9 @@ if analyze_button:
 with st.sidebar:
     st.header("Informações")
     st.markdown("""
-        Relatório formatado para compatibilidade com Excel.
+        Relatório integrado para cópia direta.
         
-        Ao copiar os dados acima, o Excel identificará automaticamente as colunas de rótulo e valor.
+        Ao selecionar a tabela e colar no Excel, o título e a conclusão serão incluídos automaticamente.
     """)
     st.write("---")
-    st.caption("v2.2 - Compatibilidade Excel")
+    st.caption("v2.3 - Tabela Unificada")
