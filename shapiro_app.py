@@ -23,23 +23,46 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Estilo CSS customizado para compactar a visualização e alinhar texto
+st.markdown("""
+    <style>
+    .report-table {
+        width: 100%;
+        font-family: sans-serif;
+    }
+    .report-label {
+        font-weight: bold;
+        text-align: left;
+        padding-right: 20px;
+        width: 40%;
+    }
+    .report-value {
+        text-align: left;
+    }
+    .conclusion-box {
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 st.title("📊 Teste de Normalidade Shapiro-Wilk")
 st.markdown("""
-    Este aplicativo permite verificar se um conjunto de dados segue uma distribuição normal.
-    Ele fornece estatísticas descritivas, a estatística do teste (W), o valor-p e gráficos de visualização.
+    Verificação de normalidade com estatísticas descritivas, W, p-valor e gráficos.
 """)
 
 # ==============================================================================
 # 2. Entrada de Dados do Usuário
 # ==============================================================================
 st.header("🔢 Insira Seus Números")
-st.info("Insira seus números separados por vírgulas (ex: 1.2, 3.4, 5.6) ou um por linha.")
 
 input_numbers_str = st.text_area(
     "Valores (entre 10 e 30 números)",
     value="",
-    height=150,
-    help="Cole ou digite seus números aqui. Use vírgulas ou quebras de linha para separar os valores."
+    height=120,
+    help="Cole ou digite seus números aqui. Use vírgulas ou quebras de linha."
 )
 
 analyze_button = st.button("Analisar Dados")
@@ -60,80 +83,70 @@ if analyze_button:
         elif num_dados == 0:
             st.error("❌ Erro: Nenhum dado válido foi inserido.")
         else:
-            st.success(f"✅ Análise concluída para {num_dados} valores.")
-            st.write("---")
-
             # Cálculos Estatísticos
             media = np.mean(dados)
-            desvio_padrao = np.std(dados, ddof=1) # ddof=1 para desvio padrão amostral
+            desvio_padrao = np.std(dados, ddof=1)
             statistic, p_value = stats.shapiro(dados)
             alpha = 0.05
 
-            # Exibição das Informações (Estilo Relatório)
-            st.header("📋 Resumo da Análise")
-            
-            # Criando colunas para as estatísticas descritivas
-            col_a, col_b, col_c = st.columns(3)
-            col_a.metric("Média", f"{media:.4f}")
-            col_b.metric("Desvio Padrão", f"{desvio_padrao:.4f}")
-            col_c.metric("Observações", f"{num_dados}")
-
             st.write("---")
+            st.header("📝 Normality test (SHAPIRO-WILK Method)")
             
-            # Resultados do Teste de Shapiro-Wilk
-            st.subheader("Resultados do Teste")
-            col_w, col_p = st.columns(2)
-            col_w.metric("Estatística W", f"{statistic:.6f}")
-            col_p.metric("Valor-P", f"{p_value:.6f}")
+            # Layout estilo tabela (Labels à esquerda, valores à direita)
+            def table_row(label, value):
+                st.markdown(f"""
+                    <div style="display: flex; justify-content: flex-start; border-bottom: 1px solid #f0f2f6; padding: 5px 0;">
+                        <div style="width: 200px; font-weight: bold;">{label}</div>
+                        <div>{value}</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
-            # Conclusão baseada no Alpha
+            table_row("Average", f"{media:.7f}")
+            table_row("Standard deviation", f"{desvio_padrao:.7f}")
+            table_row("Observations", f"{num_dados}")
+            table_row("W", f"{statistic:.6f}")
+            table_row("P-Value", f"{p_value:.7f}")
+
+            # Conclusão
             if p_value > alpha:
-                st.success(f"**CONCLUSÃO:** A normalidade é **ACEITA** com um risco alfa de {int(alpha*100)}%")
-                st.markdown("Os dados parecem seguir uma distribuição normal.")
+                st.markdown(f"<div style='color: #2e7d32; font-weight: bold; margin-top: 15px;'>CONCLUSION: The normality is accepted with an alpha risk of {int(alpha*100)}%</div>", unsafe_allow_html=True)
             else:
-                st.error(f"**CONCLUSÃO:** A normalidade é **REJEITADA** com um risco alfa de {int(alpha*100)}%")
-                st.markdown("Os dados não parecem seguir uma distribuição normal.")
+                st.markdown(f"<div style='color: #c62828; font-weight: bold; margin-top: 15px;'>CONCLUSION: The normality is rejected with an alpha risk of {int(alpha*100)}%</div>", unsafe_allow_html=True)
 
             st.write("---")
 
             # ==============================================================================
-            # 4. Gráficos
+            # 4. Gráficos (Compactados)
             # ==============================================================================
             st.header("📈 Visualização Gráfica")
             plt.style.use('seaborn-v0_8-darkgrid')
-            fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+            fig, axes = plt.subplots(1, 2, figsize=(12, 4)) # Altura reduzida para caber na tela
 
             # Histograma
             sns.histplot(dados, kde=True, bins='auto', color='royalblue', edgecolor='black', ax=axes[0])
-            axes[0].set_title('Histograma e Curva de Densidade', fontsize=14)
-            axes[0].set_xlabel('Valores', fontsize=12)
-            axes[0].set_ylabel('Frequência', fontsize=12)
+            axes[0].set_title('Histograma', fontsize=10)
+            axes[0].tick_params(labelsize=8)
 
             # Q-Q Plot
             stats.probplot(dados, dist="norm", plot=axes[1])
-            axes[1].set_title('Gráfico Q-Q (Quantil-Quantil)', fontsize=14)
-            axes[1].set_xlabel('Quantis Teóricos', fontsize=12)
-            axes[1].set_ylabel('Quantis Observados', fontsize=12)
+            axes[1].set_title('Gráfico Q-Q', fontsize=10)
+            axes[1].tick_params(labelsize=8)
 
             plt.tight_layout()
             st.pyplot(fig)
 
     except ValueError:
-        st.error("❌ Erro: Certifique-se de inserir apenas números válidos.")
+        st.error("❌ Erro: Insira apenas números válidos.")
     except Exception as e:
         st.error(f"❌ Ocorreu um erro: {e}")
 
 # Sidebar
 with st.sidebar:
-    st.header("Informações Técnicas")
+    st.header("Info")
     st.markdown("""
-        **Média:** Soma de todos os valores dividida pela contagem.
+        Relatório simplificado conforme padrão de análise de precisão.
         
-        **Desvio Padrão:** Medida da dispersão dos dados em relação à média.
-        
-        **Estatística W:** Mede a proximidade dos dados a uma distribuição normal ideal (máximo 1).
-        
-        **Valor-P:** Se for maior que 0.05, aceitamos que os dados são normais.
+        **Nível Alpha:** 5%
     """)
-    st.markdown("---")
-    st.caption("Desenvolvido para análise de precisão.")
+    st.write("---")
+    st.caption("v2.0 - Layout Compacto")
