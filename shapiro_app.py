@@ -181,13 +181,35 @@ if analyze_button:
     except Exception as e:
         st.error(f"❌ Ocorreu um erro: {e}")
 
-# Sidebar
+# ==============================================================================
+# 5. Informações Adicionais (Sidebar)
+# ==============================================================================
 with st.sidebar:
-    st.header("Informações")
+    st.header("Sobre o Teste de Shapiro-Wilk")
     st.markdown("""
-        Relatório integrado para cópia direta.
-        
-        Ao selecionar a tabela e colar no Excel, o título e a conclusão serão incluídos automaticamente.
+        O teste de Shapiro-Wilk é um teste de hipótese usado para verificar
+        se uma amostra de dados foi retirada de uma população com distribuição normal.
+
+        * **Hipótese Nula (H₀):** Os dados são normalmente distribuídos.
+        * **Hipótese Alternativa (H₁):** Os dados não são normalmente distribuídos.
+
+        **Interpretação do Valor-p:**
+        * Se `p-valor > 0.05` (nível de significância comum): Não rejeitamos H₀. Os dados podem ser normais.
+        * Se `p-valor ≤ 0.05`: Rejeitamos H₀. Os dados provavelmente não são normais.
     """)
-    st.write("---")
-    st.caption("v2.4 - Com Logo Corporativa")
+
+    st.markdown("---")
+    st.markdown("Desenvolvido por EI - MAN")
+    st.caption("v2.4")
+
+# ==============================================================================
+# 2. Logo da Empresa
+# ==============================================================================
+# OPÇÃO A: Se você tiver a imagem no GitHub, use: st.image("logo.png", width=200)
+# OPÇÃO B: Usando uma URL (substitua pela URL da logo da sua empresa)
+# Abaixo usamos colunas para centralizar a imagem
+col1, col2, col3 = st.columns([1, 1, 1])
+with col1:
+    # Substitua o link abaixo pelo link da logo da sua empresa
+    # Se quiser usar um arquivo local que subiu no GitHub, use apenas o nome do arquivo: st.image("logo.png")
+    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=200)
