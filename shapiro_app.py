@@ -5,6 +5,7 @@ Aplicativo Streamlit para Teste de Normalidade Shapiro-Wilk
 Este script cria um aplicativo web interativo usando Streamlit.
 O usuário pode inserir uma lista de números para realizar o teste de
 Shapiro-Wilk e visualizar estatísticas descritivas, resultados e gráficos.
+Layout otimizado para cópia e colagem no Excel em colunas separadas.
 """
 
 import streamlit as st
@@ -23,27 +24,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilo CSS customizado para compactar a visualização e alinhar texto
+# Estilo CSS para garantir que a tabela seja visível e limpa
 st.markdown("""
     <style>
-    .report-table {
+    table {
         width: 100%;
-        font-family: sans-serif;
+        border-collapse: collapse;
     }
-    .report-label {
-        font-weight: bold;
+    th, td {
         text-align: left;
-        padding-right: 20px;
-        width: 40%;
+        padding: 8px;
+        border-bottom: 1px solid #f0f2f6;
     }
-    .report-value {
-        text-align: left;
-    }
-    .conclusion-box {
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
+    .conclusion-text {
         font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 15px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -72,8 +68,7 @@ analyze_button = st.button("Analisar Dados")
 # ==============================================================================
 if analyze_button:
     try:
-        # Processamento da entrada
-        # Aceita vírgula ou ponto, mas normaliza para processamento interno
+        # Processamento da entrada (normaliza para ponto internamente)
         numbers_raw = input_numbers_str.replace(' ', '').replace(',', '.').replace('\n', ',').split(',')
         dados = [float(num) for num in numbers_raw if num.strip()]
 
@@ -97,29 +92,42 @@ if analyze_button:
             st.write("---")
             st.header("📝 Teste de Normalidade (Método SHAPIRO-WILK)")
             
-            # Layout estilo tabela (Labels à esquerda, valores à direita) em Português
-            def table_row(label, value):
-                st.markdown(f"""
-                    <div style="display: flex; justify-content: flex-start; border-bottom: 1px solid #f0f2f6; padding: 5px 0;">
-                        <div style="width: 200px; font-weight: bold;">{label}</div>
-                        <div>{value}</div>
-                    </div>
-                """, unsafe_allow_html=True)
+            # Construindo uma tabela HTML para facilitar a cópia para o Excel
+            # Tabelas HTML são interpretadas pelo Excel como colunas separadas
+            html_table = f"""
+            <table>
+                <tr>
+                    <td style="font-weight: bold; width: 200px;">Média</td>
+                    <td>{fmt(media)}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Desvio padrão</td>
+                    <td>{fmt(desvio_padrao)}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Observações</td>
+                    <td>{num_dados}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">W</td>
+                    <td>{fmt(statistic, 6)}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Valor-P</td>
+                    <td>{fmt(p_value)}</td>
+                </tr>
+            </table>
+            """
+            st.markdown(html_table, unsafe_allow_html=True)
 
-            table_row("Média", fmt(media))
-            table_row("Desvio padrão", fmt(desvio_padrao))
-            table_row("Observações", str(num_dados))
-            table_row("W", fmt(statistic, 6))
-            table_row("Valor-P", fmt(p_value))
-
-            # Conclusão em Português
+            # Conclusão
             if p_value > alpha:
-                st.markdown(f"<div style='color: #2e7d32; font-weight: bold; margin-top: 15px;'>CONCLUSÃO: A normalidade é aceita com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='conclusion-text' style='color: #2e7d32;'>CONCLUSÃO: A normalidade é aceita com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<div style='color: #c62828; font-weight: bold; margin-top: 15px;'>CONCLUSÃO: A normalidade é rejeitada com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='conclusion-text' style='color: #c62828;'>CONCLUSÃO: A normalidade é rejeitada com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
 
             # ==============================================================================
-            # 4. Gráficos (Abaixo do resultado, sem título extra)
+            # 4. Gráficos (Logo abaixo da conclusão)
             # ==============================================================================
             plt.style.use('seaborn-v0_8-darkgrid')
             fig, axes = plt.subplots(1, 2, figsize=(12, 4)) 
@@ -146,9 +154,9 @@ if analyze_button:
 with st.sidebar:
     st.header("Informações")
     st.markdown("""
-        Relatório simplificado em português seguindo o padrão de análise técnica.
+        Relatório formatado para compatibilidade com Excel.
         
-        **Nível Alpha:** 5%
+        Ao copiar os dados acima, o Excel identificará automaticamente as colunas de rótulo e valor.
     """)
     st.write("---")
-    st.caption("v2.1 - Layout Integrado")
+    st.caption("v2.2 - Compatibilidade Excel")
