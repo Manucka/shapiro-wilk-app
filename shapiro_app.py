@@ -201,4 +201,4 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("Desenvolvido por EI - MAN")
     st.caption("v2.4")
-    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=100)
+    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=150)
