@@ -5,7 +5,7 @@ Aplicativo Streamlit para Teste de Normalidade Shapiro-Wilk
 Este script cria um aplicativo web interativo usando Streamlit.
 O usuário pode inserir uma lista de números para realizar o teste de
 Shapiro-Wilk e visualizar estatísticas descritivas, resultados e gráficos.
-Layout otimizado para que título e conclusão também sejam exportados para o Excel.
+Inclui suporte para logo da empresa no topo.
 """
 
 import streamlit as st
@@ -46,8 +46,26 @@ st.markdown("""
         font-weight: bold;
         padding-top: 15px;
     }
+    /* Estilo para centralizar a logo */
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
     </style>
     """, unsafe_allow_html=True)
+
+# ==============================================================================
+# 2. Logo da Empresa
+# ==============================================================================
+# OPÇÃO A: Se você tiver a imagem no GitHub, use: st.image("logo.png", width=200)
+# OPÇÃO B: Usando uma URL (substitua pela URL da logo da sua empresa)
+# Abaixo usamos colunas para centralizar a imagem
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    # Substitua o link abaixo pelo link da logo da sua empresa
+    # Se quiser usar um arquivo local que subiu no GitHub, use apenas o nome do arquivo: st.image("logo.png")
+    st.image("https://logodownload.org/wp-content/uploads/2014/11/michelin-logo-0.png", width=150)
 
 st.title("📊 Teste de Normalidade Shapiro-Wilk")
 st.markdown("""
@@ -55,7 +73,7 @@ st.markdown("""
 """)
 
 # ==============================================================================
-# 2. Entrada de Dados do Usuário
+# 3. Entrada de Dados do Usuário
 # ==============================================================================
 st.header("🔢 Insira Seus Números")
 
@@ -69,7 +87,7 @@ input_numbers_str = st.text_area(
 analyze_button = st.button("Analisar Dados")
 
 # ==============================================================================
-# 3. Lógica de Análise
+# 4. Lógica de Análise
 # ==============================================================================
 if analyze_button:
     try:
@@ -140,7 +158,7 @@ if analyze_button:
             st.markdown(html_table, unsafe_allow_html=True)
 
             # ==============================================================================
-            # 4. Gráficos (Logo abaixo da tabela)
+            # 5. Gráficos (Logo abaixo da tabela)
             # ==============================================================================
             plt.style.use('seaborn-v0_8-darkgrid')
             fig, axes = plt.subplots(1, 2, figsize=(12, 4)) 
@@ -172,4 +190,4 @@ with st.sidebar:
         Ao selecionar a tabela e colar no Excel, o título e a conclusão serão incluídos automaticamente.
     """)
     st.write("---")
-    st.caption("v2.3 - Tabela Unificada")
+    st.caption("v2.4 - Com Logo Corporativa")
