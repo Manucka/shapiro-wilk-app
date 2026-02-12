@@ -201,15 +201,4 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("Desenvolvido por EI - MAN")
     st.caption("v2.4")
-
-# ==============================================================================
-# 2. Logo da Empresa
-# ==============================================================================
-# OPÇÃO A: Se você tiver a imagem no GitHub, use: st.image("logo.png", width=200)
-# OPÇÃO B: Usando uma URL (substitua pela URL da logo da sua empresa)
-# Abaixo usamos colunas para centralizar a imagem
-col1, col2, col3 = st.columns([1, 1, 1])
-with col1:
-    # Substitua o link abaixo pelo link da logo da sua empresa
-    # Se quiser usar um arquivo local que subiu no GitHub, use apenas o nome do arquivo: st.image("logo.png")
-    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=200)
+    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=100)
