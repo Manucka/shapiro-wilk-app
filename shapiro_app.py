@@ -65,7 +65,7 @@ col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # Substitua o link abaixo pelo link da logo da sua empresa
     # Se quiser usar um arquivo local que subiu no GitHub, use apenas o nome do arquivo: st.image("logo.png")
-    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=300)
+    st.image("Michelin_C_H_YellowBG_RGB_0703-01.png", width=400)
 
 st.title("📊 Teste de Normalidade Shapiro-Wilk")
 st.markdown("""
