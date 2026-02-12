@@ -50,7 +50,7 @@ st.markdown("""
 
 st.title("📊 Teste de Normalidade Shapiro-Wilk")
 st.markdown("""
-    Verificação de normalidade com estatísticas descritivas, W, p-valor e gráficos.
+    Verificação de normalidade com estatísticas descritivas, W, p-valor e gráficos integrados.
 """)
 
 # ==============================================================================
@@ -73,6 +73,7 @@ analyze_button = st.button("Analisar Dados")
 if analyze_button:
     try:
         # Processamento da entrada
+        # Aceita vírgula ou ponto, mas normaliza para processamento interno
         numbers_raw = input_numbers_str.replace(' ', '').replace(',', '.').replace('\n', ',').split(',')
         dados = [float(num) for num in numbers_raw if num.strip()]
 
@@ -89,10 +90,14 @@ if analyze_button:
             statistic, p_value = stats.shapiro(dados)
             alpha = 0.05
 
+            # Função auxiliar para formatar números com vírgula decimal
+            def fmt(valor, casas=7):
+                return f"{valor:.{casas}f}".replace('.', ',')
+
             st.write("---")
-            st.header("📝 Normality test (SHAPIRO-WILK Method)")
+            st.header("📝 Teste de Normalidade (Método SHAPIRO-WILK)")
             
-            # Layout estilo tabela (Labels à esquerda, valores à direita)
+            # Layout estilo tabela (Labels à esquerda, valores à direita) em Português
             def table_row(label, value):
                 st.markdown(f"""
                     <div style="display: flex; justify-content: flex-start; border-bottom: 1px solid #f0f2f6; padding: 5px 0;">
@@ -101,26 +106,23 @@ if analyze_button:
                     </div>
                 """, unsafe_allow_html=True)
 
-            table_row("Average", f"{media:.7f}")
-            table_row("Standard deviation", f"{desvio_padrao:.7f}")
-            table_row("Observations", f"{num_dados}")
-            table_row("W", f"{statistic:.6f}")
-            table_row("P-Value", f"{p_value:.7f}")
+            table_row("Média", fmt(media))
+            table_row("Desvio padrão", fmt(desvio_padrao))
+            table_row("Observações", str(num_dados))
+            table_row("W", fmt(statistic, 6))
+            table_row("Valor-P", fmt(p_value))
 
-            # Conclusão
+            # Conclusão em Português
             if p_value > alpha:
-                st.markdown(f"<div style='color: #2e7d32; font-weight: bold; margin-top: 15px;'>CONCLUSION: The normality is accepted with an alpha risk of {int(alpha*100)}%</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color: #2e7d32; font-weight: bold; margin-top: 15px;'>CONCLUSÃO: A normalidade é aceita com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<div style='color: #c62828; font-weight: bold; margin-top: 15px;'>CONCLUSION: The normality is rejected with an alpha risk of {int(alpha*100)}%</div>", unsafe_allow_html=True)
-
-            st.write("---")
+                st.markdown(f"<div style='color: #c62828; font-weight: bold; margin-top: 15px;'>CONCLUSÃO: A normalidade é rejeitada com um risco alfa de {int(alpha*100)}%</div>", unsafe_allow_html=True)
 
             # ==============================================================================
-            # 4. Gráficos (Compactados)
+            # 4. Gráficos (Abaixo do resultado, sem título extra)
             # ==============================================================================
-            st.header("📈 Visualização Gráfica")
             plt.style.use('seaborn-v0_8-darkgrid')
-            fig, axes = plt.subplots(1, 2, figsize=(12, 4)) # Altura reduzida para caber na tela
+            fig, axes = plt.subplots(1, 2, figsize=(12, 4)) 
 
             # Histograma
             sns.histplot(dados, kde=True, bins='auto', color='royalblue', edgecolor='black', ax=axes[0])
@@ -142,11 +144,11 @@ if analyze_button:
 
 # Sidebar
 with st.sidebar:
-    st.header("Info")
+    st.header("Informações")
     st.markdown("""
-        Relatório simplificado conforme padrão de análise de precisão.
+        Relatório simplificado em português seguindo o padrão de análise técnica.
         
         **Nível Alpha:** 5%
     """)
     st.write("---")
-    st.caption("v2.0 - Layout Compacto")
+    st.caption("v2.1 - Layout Integrado")
